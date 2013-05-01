@@ -167,6 +167,10 @@
          */
         maxRange: 0,
         /**
+         * True if future dates should be unselectable/disabled.
+         */
+        disableFuture: false,
+        /**
          * Number of side-by-side calendars, defaults to 1.
          */
         calendars: 1,
@@ -364,7 +368,9 @@
             if (date > today) {
               // current month, date in future
               data.weeks[indic].days[indic2].classname.push('datepickerFuture');
-              data.weeks[indic].days[indic2].classname.push('datepickerDisabled');
+              if (options.disableFuture) {
+                data.weeks[indic].days[indic2].classname.push('datepickerDisabled');
+              }
             }
             
             if (month != date.getMonth()) {
@@ -506,6 +512,7 @@
           var changedRange = false;
           var fillIt = false;
           var currentCal = Math.floor(options.calendars/2);
+          var today = new Date();
           
           if (parentEl.is('th')) {
             // clicking the calendar title
@@ -516,9 +523,18 @@
               
               if(options.mode == 'range') {
                 // range, select the whole month
+                if (options.disableFuture && tmp > today) {
+                  // Don't allow selection of future dates
+                  tmp = new Date();
+                }
                 options.date[0] = (tmp.setHours(0,0,0,0)).valueOf();
                 tmp.addDays(tmp.getMaxDays()-1);
+                if (options.disableFuture && tmp > today) {
+                  // Don't allow selection of future dates
+                  tmp = new Date();
+                }
                 tmp.setHours(23,59,59,0);
+
                 options.date[1] = tmp.valueOf();
                 fillIt = true;
                 changed = true;
