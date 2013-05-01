@@ -162,6 +162,11 @@
          */
         mode: 'single',
         /**
+         * Maximum range between 'from' and 'to', specified in number of days.
+         * Only used if mode is 'range'. If 0, the date range is unlimited.
+         */
+        maxRange: 0,
+        /**
          * Number of side-by-side calendars, defaults to 1.
          */
         calendars: 1,
@@ -293,6 +298,19 @@
         var options = $(el).data('datepicker');
         var cal = $(el);
         var currentCal = Math.floor(options.calendars/2), date, data, dow, month, cnt = 0, days, indic, indic2, html, tblCal;
+
+        var isInRange = null;
+        if (options.mode == 'range' && options.maxRange > 0 && options.lastSel) {
+          // If the first selection in a range was just made and there is
+          // a limit on the maximum selectable range, disabled cells outside of
+          // that range.
+          isInRange = function(dt) {
+            // Return true if supplied date is within maxRange days of the
+            // first selected date in a range.
+            var millis = Math.abs(dt - options.date[0]);
+            return millis < (options.maxRange * 24 * 60 * 60 * 1000);
+          }
+        }
         
         cal.find('td>table tbody').remove();
         for(var i = 0; i < options.calendars; i++) {
@@ -346,6 +364,7 @@
             if (date > today) {
               // current month, date in future
               data.weeks[indic].days[indic2].classname.push('datepickerFuture');
+              data.weeks[indic].days[indic2].classname.push('datepickerDisabled');
             }
             
             if (month != date.getMonth()) {
@@ -359,6 +378,11 @@
             if (date.getDay() == 6) {
               data.weeks[indic].days[indic2].classname.push('datepickerSaturday');
             }
+
+            if (isInRange && !isInRange(date)) {
+              data.weeks[indic].days[indic2].classname.push('datepickerDisabled');
+            }
+
             var fromUser = options.onRenderCell(el, date);
             var val = date.valueOf();
             if(options.date && (!$.isArray(options.date) || options.date.length > 0)) {
@@ -589,6 +613,7 @@
             }
             fillIt = true;
           }
+
           if(fillIt) {
             fill(this);
           }
@@ -601,7 +626,7 @@
         }
         return false;
       },
-      
+
       /**
        * Internal method, called from the public getDate() method, and when
        * invoking the onChange callback function

@@ -35,7 +35,7 @@ div.datepicker table {
 div.datepicker a {
   color: black;
   text-decoration: none;
-  cursor: default;
+  cursor: pointer;
   outline: none;
 }
 div.datepicker table td {
@@ -146,6 +146,9 @@ table.datepickerViewYears tbody.datepickerDays,
 table.datepickerViewYears tbody.datepickerMonths,
 table.datepickerViewYears tr.datepickerDoW {
   display: none;
+}
+div.datepicker td.datepickerDisabled a {
+  cursor: default;
 }
 td.datepickerDisabled a,
 td.datepickerDisabled.datepickerNotInMonth a{

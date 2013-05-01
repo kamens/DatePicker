@@ -54,6 +54,14 @@ div.datepicker td.datepickerFuture a {
   color:#DDDDDD;
 }
 
+/* Grey out disabled dates */
+div.datepicker td.datepickerDisabled a {
+  color:#DDDDDD;
+}
+div.datepicker tbody.datepickerDays td.datepickerDisabled:hover {
+  background-color: white;
+}
+
 /* yellow cell background on hover */
 div.datepicker tbody.datepickerDays td:hover {
   background-color: #FFCC33;
