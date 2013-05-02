@@ -350,10 +350,11 @@
           // a limit on the maximum selectable range, disabled cells outside of
           // that range.
           isInRange = function(dt) {
-            // Return true if supplied date is within maxRange days of the
-            // first selected date in a range.
-            var millis = Math.abs(dt - options.date[0]);
-            return millis < (options.maxRange * 24 * 60 * 60 * 1000);
+            // Return true if supplied date is within maxRange days ahead of
+            // the first selected date in a range.
+            var millis = dt - options.date[0];
+            return millis >= 0 && (millis <
+                    (options.maxRange * 24 * 60 * 60 * 1000));
           }
         }
         
