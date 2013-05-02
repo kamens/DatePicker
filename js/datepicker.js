@@ -131,7 +131,31 @@
               '<td colspan="1"><a href="#"><span><%=data[11]%></span></a></td>',
             '</tr>',
           '</tbody>'
-        ]
+        ],
+
+        /**
+         * Add the ability to populate additional controls based on
+         * additionalControls input dict.
+         */
+        additionalControls: function(controls) {
+          var html = ['<td class="datepickerAdditionalControls"><div>'];
+
+          if (controls.presetSelections) {
+              $.each(controls.presetSelections, function(index, preset) {
+                html[html.length] = ('<a href="#" class="datepickerPreset" ' + 
+                    'data-preset-index="' + index + '">' + preset.text +
+                    '</a>');
+              });
+          }
+
+          if (controls.submitButton) {
+            html[html.length] = '<input type="button" class="datepickerSubmit" value="Apply">';
+            html[html.length] = '<a href="#" class="datepickerCancel">Cancel</a>';
+          }
+
+          html[html.length] = '</div></td>';
+          return html.join('');
+        }
       },
       defaults = {
         /**
@@ -170,6 +194,23 @@
          * True if future dates should be unselectable/disabled.
          */
         disableFuture: false,
+        /**
+         * Additional controls to be added on right-side of the calendar UI.
+         * This is a dict that defines what controls to add and supports the
+         * following: {
+         *      submitButton: true,  // true to show submit/cancel buttons
+         *      presetSelections: [  // list of preset links like "last 5 days"
+         *          {
+         *              text: "last 5 days",  // text of preset link
+         *              getDate: function() {
+         *                  // function that returns preset selection's date
+         *                  // values in the same form as DatePickerGetDate.
+         *              }
+         *          }
+         *      ]
+         * }
+         */
+        additionalControls: null,
         /**
          * Number of side-by-side calendars, defaults to 1.
          */
@@ -864,6 +905,31 @@
             options.id = id;
             $(this).data('datepickerId', options.id);
             var cal = $(tpl.wrapper).attr('id', id).bind('click', click).data('datepicker', options);
+
+            cal
+                .on("click", ".datepickerCancel", function(e) {
+                    e.preventDefault();
+                    // STOPSHIP(kamens)
+                })
+                .on("click", ".datepickerSubmit", function(e) {
+                    e.preventDefault();
+                    // STOPSHIP(kamens)
+                })
+                .on("click", ".datepickerPreset", function(e) {
+                    e.preventDefault();
+
+                    // Clicked on a preset link such as "last 5 days" specified
+                    // by client code. Set date to the preset selection.
+                    var $el = $(this),
+                        presetIndex = $el.data("presetIndex"),
+                        preset = options.additionalControls.presetSelections[presetIndex];
+
+                    if (preset) {
+                      options.lastSel = false;
+                      $(options.el).DatePickerSetDate(preset.getDate(), true);
+                    }
+                });
+
             if (options.className) {
               cal.addClass(options.className);
             }
@@ -886,6 +952,12 @@
                 day7: options.locale.daysMin[(cnt++)%7]
               });
             }
+
+            if (options.additionalControls) {
+              html += tpl.space;
+              html += tpl.additionalControls(options.additionalControls);
+            }
+
             cal
               .find('tr:first').append(html)
                 .find('table').addClass(views[options.view]);
