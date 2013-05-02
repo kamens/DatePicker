@@ -561,6 +561,7 @@
             if (el.hasClass('datepickerMonth')) {
               // clicking on the title of a Month Datepicker
               tmp.addMonths(tblIndex - currentCal);
+              tmp.setDate(1);
               
               if(options.mode == 'range') {
                 // range, select the whole month
