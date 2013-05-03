@@ -3,8 +3,7 @@
  * 
  * A jQuery-based DatePicker that provides an easy way of creating both single
  * and multi-viewed calendars capable of accepting single, range, and multiple
- * selected dates.  Easily styled with two example styles provided: an attractive
- * 'dark' style, and a Google Analytics-like 'clean' style.
+ * selected dates.
  * 
  * View project page for Examples and Documentation:
  * http://foxrunsoftware.github.com/DatePicker/
