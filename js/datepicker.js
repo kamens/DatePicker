@@ -311,6 +311,13 @@
          */
         onAfterHide: function() { },
         /**
+         * Invoked after the "apply" button is clicked, if it is shown via
+         * additionalControls.
+         *
+         * Parameters are identical to onChange.
+         */
+        onApply: function() { },
+        /**
          * Locale text for day/month names: provide a hash with keys 'daysMin', 'months' and 'monthsShort'. Default english 
          */
         locale: {
@@ -930,6 +937,7 @@
                 .on("click", ".datepickerSubmit", function(e) {
                     e.preventDefault();
                     $(options.el).DatePickerHide();
+                    options.onApply.apply(this, prepareDate(options));
                 })
                 .on("click", ".datepickerPreset", function(e) {
                     e.preventDefault();
