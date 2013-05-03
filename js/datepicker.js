@@ -148,7 +148,7 @@
               });
           }
 
-          if (controls.submitButton) {
+          if (controls.applyAndCancel) {
             html[html.length] = '<input type="button" class="datepickerSubmit" value="Apply">';
             html[html.length] = '<a href="#" class="datepickerCancel">Cancel</a>';
           }
@@ -198,7 +198,7 @@
          * Additional controls to be added on right-side of the calendar UI.
          * This is a dict that defines what controls to add and supports the
          * following: {
-         *      submitButton: true,  // true to show submit/cancel buttons
+         *      applyAndCancel: true,  // true to show apply/cancel buttons
          *      presetSelections: [  // list of preset links like "last 5 days"
          *          {
          *              text: "last 5 days",  // text of preset link
@@ -331,7 +331,13 @@
         /**
          * Private option, used to determine when a range is selected
          */
-        lastSel: false
+        lastSel: false,
+        /**
+         * Private option, used to store the previously selected dates when an
+         * inline datepicker is shown (and to restore these dates when the
+         * inline datepicker is cancelled).
+         */
+        lastDates: null
       },
       
       /**
@@ -761,6 +767,12 @@
         if (!cal.is(':visible')) {
           var calEl = cal.get(0);
           var options = cal.data('datepicker');
+
+          // Store previously selected dates in case this 'show' is cancelled
+          options.lastDates = $(options.el).DatePickerGetDate()[0];
+
+          // When showing calendar, clear any previous partial selection
+          options.lastSel = null;
           
           var test = options.onBeforeShow.apply(this, [calEl]);
           if(options.onBeforeShow.apply(this, [calEl]) == false) {
@@ -772,7 +784,7 @@
           var viewPort = getViewport();
           var top = pos.top;
           var left = pos.left;
-          var oldDisplay = $.curCSS(calEl, 'display');
+          var oldDisplay = $.css(calEl, 'display');
           cal.css({
             visibility: 'hidden',
             display: 'block'
@@ -911,11 +923,13 @@
             cal
                 .on("click", ".datepickerCancel", function(e) {
                     e.preventDefault();
-                    // STOPSHIP(kamens)
+                    $(options.el)
+                        .DatePickerSetDate(options.lastDates || (new Date()))
+                        .DatePickerHide();
                 })
                 .on("click", ".datepickerSubmit", function(e) {
                     e.preventDefault();
-                    // STOPSHIP(kamens)
+                    $(options.el).DatePickerHide();
                 })
                 .on("click", ".datepickerPreset", function(e) {
                     e.preventDefault();
