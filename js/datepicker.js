@@ -1052,6 +1052,8 @@
               options.current = new Date(options.mode != 'single' ? options.date[0] : options.date);
             }
             fill(cal.get(0));
+
+            options.onChange.apply(this, prepareDate(options));
           }
         });
       },
