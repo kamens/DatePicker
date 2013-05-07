@@ -148,7 +148,7 @@
           }
 
           if (controls.applyAndCancel) {
-            html[html.length] = '<input type="button" class="datepickerSubmit" value="Apply">';
+            html[html.length] = '<input type="button" class="datepickerApply" value="Apply">';
             html[html.length] = '<a href="#" class="datepickerCancel">Cancel</a>';
           }
 
@@ -933,7 +933,7 @@
                         .DatePickerSetDate(options.lastDates || (new Date()))
                         .DatePickerHide();
                 })
-                .on("click", ".datepickerSubmit", function(e) {
+                .on("click", ".datepickerApply", function(e) {
                     e.preventDefault();
                     $(options.el).DatePickerHide();
                     options.onApply.apply(this, prepareDate(options));

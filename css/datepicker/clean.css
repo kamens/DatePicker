@@ -83,3 +83,15 @@ div.datepicker td.datepickerToday a {
 div.datepicker th a.datepickerMonth {
   width:121px;
 }
+
+div.datepicker a.datepickerCancel,
+div.datepicker a.datepickerPreset {
+  color:#008ED6;
+  font-weight:normal;
+  width: 114px;
+}
+
+div.datepicker a.datepickerCancel {
+  display: inline;
+  font-size: 11px;
+}

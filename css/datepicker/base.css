@@ -179,3 +179,7 @@ div.datepicker td.datepickerNotInMonth a:hover span {
 div.datepicker tbody.datepickerDays td.datepickerNotInMonth:hover {
   background-color: transparent;
 }
+
+td.datepickerAdditionalControls {
+  vertical-align: top;
+}
