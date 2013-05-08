@@ -735,7 +735,7 @@
       updatePreview = function(options) {
         $("#" + options.id)
           .find(".datepickerPreview")
-            .html(formattedDateRange());
+            .html(formattedDateRange("to"));
       },
 
       /**
@@ -751,16 +751,17 @@
        * Return formatted, currently selected range of dates, with HTML
        * included. e.g. "Mar 18, 1983 -<br>Oct 18, 1985"
        */
-      formattedDateRange = function() {
+      formattedDateRange = function(separator) {
         var dates = $("#date-range-field").DatePickerGetDate()[0],
             from = formattedDate(dates[0]),
-            to = formattedDate(dates[1]);
+            to = formattedDate(dates[1]),
+            separator = separator || "-";
 
         if (from == to) {
           return from;
         } else {
-          var separator = "<span class='dateRangeSeparator'>to</span>";
-          return from + separator + to;
+          return (from + "<span class='dateRangeSeparator'> " + separator +
+                  " </span>" + to);
         }
       },
       
