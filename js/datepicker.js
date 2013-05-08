@@ -759,7 +759,7 @@
         if (from == to) {
           return from;
         } else {
-          var separator = "<br><span class='dateRangeSeparator'>to</span><br>";
+          var separator = "<span class='dateRangeSeparator'>to</span>";
           return from + separator + to;
         }
       },
