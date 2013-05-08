@@ -144,8 +144,8 @@
 
           if (controls.presetSelections) {
               $.each(controls.presetSelections, function(index, preset) {
-                html.push('<option value="' + index + '" ' +
-                    'class="datepickerPreset">' + preset.text + '</option>');
+                html.push('<option value="' + index + '"> ' + preset.text +
+                    '</option>');
               });
           }
           html.push('</select>');
@@ -694,6 +694,7 @@
           if(changed) {
             options.onChange.apply(this, prepareDate(options));
             updatePreview(options);
+            setCustomPreset(options);
           }
           if(changedRange) {
             options.onRangeChange.apply(this, prepareDate(options));
@@ -736,6 +737,15 @@
         $("#" + options.id)
           .find(".datepickerPreview")
             .html(formattedDateRange("to"));
+      },
+
+      /**
+       * Set the preset dropdown's value to "custom"
+       */
+      setCustomPreset = function(options) {
+        $("#" + options.id)
+          .find(".datepickerPreset")
+            .val(-1);
       },
 
       /**
