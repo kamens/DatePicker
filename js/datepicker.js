@@ -752,6 +752,17 @@
             .html(formattedDateRange("to"));
       },
 
+
+      /**
+       * Update the view of the currently applied date
+       */
+      updateApplied = function(options) {
+        $(options.el)
+          .DatePickerHide()
+          .find(".date-desc")
+            .html(formattedDateRange());
+      },
+
       /**
        * Set the preset dropdown's value to "custom"
        */
@@ -1000,11 +1011,7 @@
                 })
                 .on("click", ".datepickerApply", function(e) {
                     e.preventDefault();
-                    
-                    $(options.el)
-                        .DatePickerHide()
-                        .html(formattedDateRange());
-
+                    updateApplied(options);
                     options.onApply.apply(this, prepareDate(options));
                 })
                 .on("change", ".datepickerPreset", function(e) {
@@ -1059,6 +1066,8 @@
               cal.appendTo(document.body);
               $(this).bind(options.showOn, show);
             }
+
+            updateApplied(options);
           }
         });
       },
