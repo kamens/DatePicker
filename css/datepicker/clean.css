@@ -84,14 +84,34 @@ div.datepicker th a.datepickerMonth {
   width:121px;
 }
 
-div.datepicker a.datepickerCancel,
-div.datepicker a.datepickerPreset {
+div.datepicker select.datepickerPreset {
+  display: block;
+  width: 150px;
+}
+
+div.datepicker a.datepickerCancel {
   color:#008ED6;
   font-weight:normal;
-  width: 114px;
+  width: 35px;
+}
+
+div.datepicker input.datepickerApply {
+  width: 110px;
+  margin-left: 5px;
 }
 
 div.datepicker a.datepickerCancel {
   display: inline;
   font-size: 11px;
+}
+
+div.datepicker div.datepickerPreview {
+  font-size: 19px;
+  height: 90px;
+  padding-top: 15px;
+}
+
+div.datepicker span.dateRangeSeparator {
+  font-size: 12px;
+  color: #898989;
 }

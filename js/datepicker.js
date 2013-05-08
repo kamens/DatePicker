@@ -139,20 +139,24 @@
         additionalControls: function(controls) {
           var html = ['<td class="datepickerAdditionalControls"><div>'];
 
+          html.push('<select class="datepickerPreset">');
+          html.push('<option value="-1">custom dates</option>');
+
           if (controls.presetSelections) {
               $.each(controls.presetSelections, function(index, preset) {
-                html[html.length] = ('<a href="#" class="datepickerPreset" ' + 
-                    'data-preset-index="' + index + '">' + preset.text +
-                    '</a>');
+                html.push('<option value="' + index + '" ' +
+                    'class="datepickerPreset">' + preset.text + '</option>');
               });
           }
+          html.push('</select>');
+          html.push('<div class="datepickerPreview"></div>');
 
           if (controls.applyAndCancel) {
-            html[html.length] = '<input type="button" class="datepickerApply" value="Apply">';
-            html[html.length] = '<a href="#" class="datepickerCancel">Cancel</a>';
+            html.push('<a href="#" class="datepickerCancel">Cancel</a>');
+            html.push('<input type="button" class="datepickerApply" value="Apply">');
           }
 
-          html[html.length] = '</div></td>';
+          html.push('</div></td>');
           return html.join('');
         }
       },
@@ -198,9 +202,9 @@
          * This is a dict that defines what controls to add and supports the
          * following: {
          *      applyAndCancel: true,  // true to show apply/cancel buttons
-         *      presetSelections: [  // list of preset links like "last 5 days"
+         *      presetSelections: [  // list of preset choices ("last 5 days")
          *          {
-         *              text: "last 5 days",  // text of preset link
+         *              text: "last 5 days",  // text of preset choice
          *              getDate: function() {
          *                  // function that returns preset selection's date
          *                  // values in the same form as DatePickerGetDate.
@@ -362,11 +366,10 @@
           // a limit on the maximum selectable range, disabled cells outside of
           // that range.
           isInRange = function(dt) {
-            // Return true if supplied date is within maxRange days ahead of
-            // the first selected date in a range.
-            var millis = dt - options.date[0];
-            return millis >= 0 && (millis <
-                    (options.maxRange * 24 * 60 * 60 * 1000));
+            // Return true if supplied date is within maxRange days of the
+            // first selected date in a range.
+            var millis = Math.abs(dt - options.date[0]);
+            return millis < (options.maxRange * 24 * 60 * 60 * 1000);
           }
         }
         
@@ -690,6 +693,7 @@
           }
           if(changed) {
             options.onChange.apply(this, prepareDate(options));
+            updatePreview(options);
           }
           if(changedRange) {
             options.onRangeChange.apply(this, prepareDate(options));
@@ -723,6 +727,41 @@
           });
         }
         return [dates, options.el];
+      },
+
+      /**
+       * Update the preview of currently selected (but not applied) dates
+       */
+      updatePreview = function(options) {
+        $("#" + options.id)
+          .find(".datepickerPreview")
+            .html(formattedDateRange());
+      },
+
+      /**
+       * Format a date as "Mar 18, 1983"
+       */
+      formattedDate = function(dt) {
+        return (dt.getDate() + " " +
+                dt.getMonthName(false) + ", " +
+                dt.getFullYear());
+      },
+
+      /**
+       * Return formatted, currently selected range of dates, with HTML
+       * included. e.g. "Mar 18, 1983 -<br>Oct 18, 1985"
+       */
+      formattedDateRange = function() {
+        var dates = $("#date-range-field").DatePickerGetDate()[0],
+            from = formattedDate(dates[0]),
+            to = formattedDate(dates[1]);
+
+        if (from == to) {
+          return from;
+        } else {
+          var separator = "<br><span class='dateRangeSeparator'>to</span><br>";
+          return from + separator + to;
+        }
       },
       
       /**
@@ -828,6 +867,9 @@
             top: top + 'px',
             left: left + 'px'
           });
+
+          updatePreview(options);
+
           options.onAfterShow.apply(this, [cal.get(0)]);
           $(document).bind('mousedown', {cal: cal, trigger: this}, hide);  // global listener so clicking outside the calendar will close it
         }
@@ -935,16 +977,18 @@
                 })
                 .on("click", ".datepickerApply", function(e) {
                     e.preventDefault();
-                    $(options.el).DatePickerHide();
+                    
+                    $(options.el)
+                        .DatePickerHide()
+                        .html(formattedDateRange());
+
                     options.onApply.apply(this, prepareDate(options));
                 })
-                .on("click", ".datepickerPreset", function(e) {
-                    e.preventDefault();
-
-                    // Clicked on a preset link such as "last 5 days" specified
-                    // by client code. Set date to the preset selection.
+                .on("change", ".datepickerPreset", function(e) {
+                    // Chose a preset option such as "last 5 days" specified by
+                    // client code. Set date to the preset selection.
                     var $el = $(this),
-                        presetIndex = $el.data("presetIndex"),
+                        presetIndex = $el.val(),
                         preset = options.additionalControls.presetSelections[presetIndex];
 
                     if (preset) {
@@ -1061,6 +1105,7 @@
             fill(cal.get(0));
 
             options.onChange.apply(this, prepareDate(options));
+            updatePreview(options);
           }
         });
       },
@@ -1081,7 +1126,7 @@
           return prepareDate($('#' + $(this).data('datepickerId')).data('datepicker'));
         }
       },
-      
+     
       /**
        * Clears the currently selected date(s)
        * 
