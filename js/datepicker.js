@@ -704,6 +704,22 @@
       },
 
       /**
+       * Copy a date or list of dates, returning a new date or new list full of
+       * newly copied dates.
+       */
+      copyDates = function(dates) {
+        if (!$.isArray(dates)) {
+          return new Date(dates);
+        }
+
+        var copies = new Array();
+        $(dates).each(function(i, val) {
+          copies.push(new Date(val));
+        });
+        return copies;
+      },
+
+      /**
        * Internal method, called from the public getDate() method, and when
        * invoking the onChange callback function
        * 
@@ -722,10 +738,7 @@
         if (options.mode == 'single') {
           if(options.date) dates = new Date(options.date);
         } else {
-          dates = new Array();
-          $(options.date).each(function(i, val){
-            dates.push(new Date(val));
-          });
+          dates = copyDates(options.date);
         }
         return [dates, options.el];
       },
@@ -983,8 +996,7 @@
                 .on("click", ".datepickerCancel", function(e) {
                     e.preventDefault();
                     $(options.el)
-                        .DatePickerSetDate(options.lastDates || (new Date()))
-                        .DatePickerHide();
+                        .DatePickerSetDate(options.lastDates || (new Date()), true);
                 })
                 .on("click", ".datepickerApply", function(e) {
                     e.preventDefault();
@@ -1104,6 +1116,7 @@
        * @see DatePickerSetDate()
        */
       setDate: function(date, shiftTo){
+        date = copyDates(date);
         return this.each(function(){
           if ($(this).data('datepickerId')) {
             var cal = $('#' + $(this).data('datepickerId'));
