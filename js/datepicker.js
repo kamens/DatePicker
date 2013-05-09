@@ -752,7 +752,6 @@
             .html(formattedDateRange("to"));
       },
 
-
       /**
        * Update the view of the currently applied date
        */
@@ -761,6 +760,16 @@
           .DatePickerHide()
           .find(".date-desc")
             .html(formattedDateRange());
+      },
+
+      /**
+       * Flip the dropdown arrow on the right of the main date input control up
+       * or down as specified by "direction".
+       */
+      flipArrow = function(options, direction) {
+        $(options.el)
+          .find(".date-arrow")
+            .html(direction == "down" ? "&#x25BC;" : "&#x25B2;");
       },
 
       /**
@@ -833,6 +842,18 @@
         }
         return false;
       },
+
+      /**
+       * Hide datepicker if it is visible only.
+       */
+      hideIfVisible = function(ev) {
+        var cal = $('#' + $(this).data('datepickerId'));
+        if (cal.is(':visible')) {
+          ev.preventDefault();
+          ev.data = {cal: cal};
+          hide.apply(this, [ev]);
+        }
+      },
       
       /**
        * Bound to the HTML DatePicker element when it's not inline, and also 
@@ -843,6 +864,11 @@
        * Method is not applicable for inline DatePickers
        */
       show = function (ev) {
+        if (ev.isDefaultPrevented()) {
+          // Don't show if, say, previously hidden and preventDefault() was set
+          return false;
+        }
+
         var cal = $('#' + $(this).data('datepickerId'));
         if (!cal.is(':visible')) {
           var calEl = cal.get(0);
@@ -904,9 +930,10 @@
           });
 
           updatePreview(options);
+          flipArrow(options, "up");
 
           options.onAfterShow.apply(this, [cal.get(0)]);
-          $(document).bind('mousedown', {cal: cal, trigger: this}, hide);  // global listener so clicking outside the calendar will close it
+          $(document).bind('click', {cal: cal}, hide);  // global listener so clicking outside the calendar will close it
         }
         return false;
       },
@@ -919,12 +946,12 @@
        * @param ev Event object
        */
       hide = function (ev) {
-        if (ev.target != ev.data.trigger && !isChildOf(ev.data.cal.get(0), ev.target, ev.data.cal.get(0))) {
-          if (ev.data.cal.data('datepicker').onBeforeHide.apply(this, [ev.data.cal.get(0)]) != false) {
-            ev.data.cal.hide();
-            ev.data.cal.data('datepicker').onAfterHide.apply(this, [ev.data.cal.get(0)]);
-            $(document).unbind('mousedown', hide);  // remove the global listener
-          }
+        var options = ev.data.cal.data("datepicker");
+        if (options.onBeforeHide.apply(this, [ev.data.cal.get(0)]) != false) {
+          ev.data.cal.hide();
+          options.onAfterHide.apply(this, [ev.data.cal.get(0)]);
+          flipArrow(options, "down");
+          $(document).unbind('click', hide);  // remove the global listener
         }
       },
       
@@ -1064,7 +1091,9 @@
               layout(cal.get(0));
             } else {
               cal.appendTo(document.body);
-              $(this).bind(options.showOn, show);
+              $(this)
+                  .bind("click", hideIfVisible)
+                  .bind(options.showOn, show);
             }
 
             updateApplied(options);
@@ -1102,7 +1131,7 @@
             var cal = $('#' + $(this).data('datepickerId'));
             var options = cal.data('datepicker');
             if(!options.inline) {
-              $('#' + $(this).data('datepickerId')).hide();
+              hide.apply(this, [{data: {cal: cal}}]);
             }
           }
         });

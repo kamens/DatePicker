@@ -314,6 +314,7 @@ div.datepickerInput {
   border-radius: 5px;
   background: white;
   cursor: pointer;
+  text-align: center;
 }
 
 div.datepickerInput:hover {
