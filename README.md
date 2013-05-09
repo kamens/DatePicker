@@ -1,6 +1,6 @@
-# DatePicker-khan
+# DatePickerKA
 
-A very specific fork of "[DatePicker, Yet another jQuery-based date picker](https://github.com/foxrunsoftware/DatePicker)."
+A very specific fork of "[DatePicker, Yet another jQuery-based date picker](https://github.com/foxrunsoftware/DatePicker)," built for Khan Academy.
 
 Specifically, this is meant to enable date range selection functionality very similar to Google Analytics'.
 
