@@ -140,7 +140,7 @@
           var html = ['<td class="datepickerAdditionalControls"><div>'];
 
           html.push('<select class="datepickerPreset">');
-          html.push('<option value="-1">custom dates</option>');
+          html.push('<option value="-1">Custom dates</option>');
 
           if (controls.presetSelections) {
               $.each(controls.presetSelections, function(index, preset) {
