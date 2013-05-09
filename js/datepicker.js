@@ -368,8 +368,8 @@
           isInRange = function(dt) {
             // Return true if supplied date is within maxRange days of the
             // first selected date in a range.
-            var millis = Math.abs(dt - options.date[0]);
-            return millis < (options.maxRange * 24 * 60 * 60 * 1000);
+            var millis = dt - options.date[0];
+            return millis >= 0 && millis < (options.maxRange * 24 * 60 * 60 * 1000);
           }
         }
         
@@ -749,17 +749,18 @@
       updatePreview = function(options) {
         $("#" + options.id)
           .find(".datepickerPreview")
-            .html(formattedDateRange("to"));
+            .html(formattedDateRange(options, "to"));
       },
 
       /**
        * Update the view of the currently applied date
        */
       updateApplied = function(options) {
+        options.lastSel = false;
         $(options.el)
           .DatePickerHide()
           .find(".date-desc")
-            .html(formattedDateRange());
+            .html(formattedDateRange(options));
       },
 
       /**
@@ -794,11 +795,15 @@
        * Return formatted, currently selected range of dates, with HTML
        * included. e.g. "Mar 18, 1983 -<br>Oct 18, 1985"
        */
-      formattedDateRange = function(separator) {
+      formattedDateRange = function(options, separator) {
         var dates = $("#date-range-field").DatePickerGetDate()[0],
             from = formattedDate(dates[0]),
             to = formattedDate(dates[1]),
             separator = separator || "-";
+
+        if (options.lastSel) {
+          to = "...";
+        }
 
         if (from == to) {
           return from;
@@ -878,7 +883,7 @@
           options.lastDates = $(options.el).DatePickerGetDate()[0];
 
           // When showing calendar, clear any previous partial selection
-          options.lastSel = null;
+          options.lastSel = false;
           
           var test = options.onBeforeShow.apply(this, [calEl]);
           if(options.onBeforeShow.apply(this, [calEl]) == false) {
