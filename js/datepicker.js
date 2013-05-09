@@ -796,7 +796,7 @@
        * included. e.g. "Mar 18, 1983 -<br>Oct 18, 1985"
        */
       formattedDateRange = function(options, separator) {
-        var dates = $("#date-range-field").DatePickerGetDate()[0],
+        var dates = $(options.el).DatePickerGetDate()[0],
             from = formattedDate(dates[0]),
             to = formattedDate(dates[1]),
             separator = separator || "-";
